@@ -1,17 +1,44 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'Node-LTS'
+    }
+
     stages {
-        stage('Hello') {
+        stage('Check Node.js') {
             steps {
-                echo 'Jenkins successfully read this file from GitHub!'
+                bat 'node --version'
+                bat 'npm --version'
             }
         }
 
-        stage('Windows Check') {
+        stage('Install Dependencies') {
             steps {
-                bat 'echo Jenkins is running'
+                bat 'call npm install'
             }
+        }
+
+        stage('Build Application') {
+            steps {
+                bat 'call npm run build'
+            }
+        }
+
+        stage('Test Application') {
+            steps {
+                bat 'call npm test'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Node.js application build and test completed successfully.'
+        }
+
+        failure {
+            echo 'Build failed. Check Console Output.'
         }
     }
 }
